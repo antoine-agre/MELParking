@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parking/models/Parking.dart';
 import 'package:parking/models/ParkingListModel.dart';
 import 'package:provider/provider.dart';
 
@@ -14,35 +15,26 @@ class _ParkingListState extends State<ParkingList> {
   Widget build(BuildContext context) {
     return Consumer<ParkingListModel>(
       builder: (context, data, child) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('### Hello World! ###'),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text("Dernière mise à jour :"),
-              Text(data.lastUpdated),
-              const SizedBox(
-                height: 20,
-              ),
-              for (var parking in data.parkingList)
-                Text(
-                    "${parking.name} - ${parking.state} - ${parking.emptySpaces} places libres"),
-              Text('### Hello World! ###'),
-              TextButton(
-                  onPressed: () {
-                    data.updateData();
-                    // setState(() {
-                    //   appDataProvider.appData.updateData();
-                    // });
-                  },
-                  child: Text("Fetch data"))
-            ],
-          ),
+        List<Parking> parkingList = data.parkingList;
+        return RefreshIndicator(
+          onRefresh: () async {
+            data.updateData();
+            return Future<void>.delayed(const Duration(milliseconds: 500));
+          },
+          child: ListView.builder(
+              itemCount: parkingList.length,
+              itemBuilder: (BuildContext context, int i) {
+                return ListTile(
+                  title: Text(
+                      parkingList[i].name.replaceFirst("Parking", "").trim()),
+                  leading: const Icon(Icons.local_parking),
+                  trailing: Icon(Icons.favorite_border),
+                );
+              }),
         );
       },
     );
   }
 }
+
+//TODO : function to clean strings
