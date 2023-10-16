@@ -42,6 +42,14 @@ class _MainAppState extends State<MainApp> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('### Hello World! ###'),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text("Dernière mise à jour :"),
+                  Text(data.lastUpdated),
+                  SizedBox(
+                    height: 20,
+                  ),
                   for (var parking in data.parkingList)
                     Text(
                         "${parking.name} - ${parking.state} - ${parking.emptySpaces} places libres"),

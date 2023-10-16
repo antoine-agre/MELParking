@@ -7,9 +7,12 @@ import 'package:parking/models/Parking.dart';
 
 class ParkingListModel extends ChangeNotifier {
   final List<Parking> _parkingList = [];
+  String _lastUpdated = "";
 
   UnmodifiableListView<Parking> get parkingList =>
       UnmodifiableListView(_parkingList);
+
+  String get lastUpdated => _lastUpdated;
 
   void updateData() async {
     final response = await http.get(Uri.parse(
@@ -21,6 +24,9 @@ class ParkingListModel extends ChangeNotifier {
     } else {
       throw Exception("Failed to load parking data.");
     }
+
+    _lastUpdated = response.headers['date'] ?? "Erreur de date";
+    // response.headers.forEach((key, value) => print("[$key] $value"));
 
     notifyListeners();
   }
