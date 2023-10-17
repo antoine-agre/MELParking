@@ -7,7 +7,10 @@ import 'package:parking/models/Parking.dart';
 
 class ParkingListModel extends ChangeNotifier {
   final List<Parking> _parkingList = [
-    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ")
+    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
+    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
+    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
+    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
   ];
   String _lastUpdated = "";
 

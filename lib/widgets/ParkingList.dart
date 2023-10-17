@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parking/models/Parking.dart';
 import 'package:parking/models/ParkingListModel.dart';
+import 'package:parking/widgets/ParkingCard.dart';
 import 'package:provider/provider.dart';
 
 class ParkingList extends StatefulWidget {
@@ -31,25 +32,25 @@ class _ParkingListState extends State<ParkingList> {
             return Future<void>.delayed(const Duration(milliseconds: 500));
           },
           child: ListView.builder(
-              itemCount: parkingList.length,
-              itemBuilder: (BuildContext context, int i) {
-                return ListTile(
-                  title: Text(
-                      parkingList[i].name.replaceFirst("Parking", "").trim()),
-                  leading: const Icon(Icons.local_parking),
-                  trailing: Container(
-                      child: InkWell(
-                    child: parkingList[i].favorite
-                        ? favoriteIcon
-                        : notFavoriteIcon,
-                    onTap: () {
-                      setState(() {
-                        parkingList[i].favorite = !parkingList[i].favorite;
-                      });
-                    },
-                  )),
-                );
-              }),
+            itemCount: parkingList.length,
+            itemBuilder: (BuildContext context, int i) {
+              return ParkingCard(parking: parkingList[i]);
+              // return ListTile(
+              //   title: Text(
+              //       parkingList[i].name.replaceFirst("Parking", "").trim()),
+              //   leading: const Icon(Icons.local_parking),
+              //   trailing: InkWell(
+              //     child:
+              //         parkingList[i].favorite ? favoriteIcon : notFavoriteIcon,
+              //     onTap: () {
+              //       setState(() {
+              //         parkingList[i].favorite = !parkingList[i].favorite;
+              //       });
+              //     },
+              //   ),
+              // );
+            },
+          ),
         );
       },
     );
