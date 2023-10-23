@@ -17,12 +17,6 @@ class ParkingList extends StatefulWidget {
 
 class _ParkingListState extends State<ParkingList> {
   @override
-  void initState() {
-    Provider.of<ParkingListModel>(context, listen: false).updateData(context);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     Icon favoriteIcon = const Icon(Icons.favorite);
     Icon notFavoriteIcon = const Icon(Icons.favorite_border);

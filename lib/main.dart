@@ -29,6 +29,12 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   @override
+  void initState() {
+    Provider.of<ParkingListModel>(context, listen: false).updateData(context);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // AppDataProvider? appDataProvider = AppDataProvider.of(context)!;
 
