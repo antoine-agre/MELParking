@@ -50,7 +50,9 @@ class _MainAppState extends State<MainApp> {
           body: TabBarView(
             children: [
               ParkingList(),
-              ParkingList(),
+              ParkingList(
+                onlyFavorites: true,
+              ),
               Center(child: Text("Tab 3")),
             ],
           ),

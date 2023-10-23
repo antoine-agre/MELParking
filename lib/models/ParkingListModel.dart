@@ -19,15 +19,17 @@ class ParkingListModel extends ChangeNotifier {
 
   String get lastUpdated => _lastUpdated;
 
-  void updateData(BuildContext context) async {
+  Future<void> updateData(BuildContext context) async {
     try {
       final response = await http.get(Uri.parse(
-          'https://opendata.lillemetropole.fr/api/explore/v2.1/catalog/datasets/disponibilite-parkings/records?limit=20'));
+          'https://opendata.lillemetropole.fr/api/explore/v2.1/catalog/datasets/disponibilite-parkings/records?limit=-1'));
 
       if (response.statusCode == 200) {
+        print("DONE !");
         List<Parking> newList = _parseJSON(response);
         _parkingList.clear();
         _parkingList.addAll(newList);
+        _parkingList.sort((a, b) => a.name.compareTo(b.name));
       } else {
         throw Exception("Failed to load parking data.");
       }
@@ -56,7 +58,7 @@ class ParkingListModel extends ChangeNotifier {
   bool _isFavorite(String id) {
     //returns true if parking of given id exists and is favorited.
     if (_parkingList.any((parking) => parking.id == id)) {
-      return _parkingList.firstWhere((parking) => parking.id == id).favorite;
+      return _parkingList.singleWhere((parking) => parking.id == id).favorite;
     } else {
       return false;
     }

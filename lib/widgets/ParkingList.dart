@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:parking/models/Parking.dart';
 import 'package:parking/models/ParkingListModel.dart';
@@ -5,7 +7,9 @@ import 'package:parking/widgets/ParkingCard.dart';
 import 'package:provider/provider.dart';
 
 class ParkingList extends StatefulWidget {
-  const ParkingList({super.key});
+  final bool onlyFavorites;
+
+  const ParkingList({super.key, this.onlyFavorites = false});
 
   @override
   State<ParkingList> createState() => _ParkingListState();
@@ -26,15 +30,21 @@ class _ParkingListState extends State<ParkingList> {
     return Consumer<ParkingListModel>(
       builder: (context, data, child) {
         List<Parking> parkingList = data.parkingList;
+        if (widget.onlyFavorites) {
+          parkingList = List<Parking>.from(parkingList);
+          parkingList.retainWhere((parking) => parking.favorite);
+          parkingList = UnmodifiableListView(parkingList);
+        }
         return RefreshIndicator(
           onRefresh: () async {
-            data.updateData(context);
-            return Future<void>.delayed(const Duration(milliseconds: 500));
+            return data.updateData(context);
+            // return Future<void>.delayed(const Duration(milliseconds: 500));
           },
           child: ListView.builder(
             itemCount: parkingList.length,
             itemBuilder: (BuildContext context, int i) {
-              return ParkingCard(parking: parkingList[i]);
+              return ParkingCard(
+                  parking: parkingList[i], key: ValueKey(parkingList[i].id));
               // return ListTile(
               //   title: Text(
               //       parkingList[i].name.replaceFirst("Parking", "").trim()),
