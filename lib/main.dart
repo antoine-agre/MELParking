@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:parking/models/Parking.dart';
 import 'package:parking/models/DataModel.dart';
@@ -30,7 +32,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   @override
   void initState() {
-    Provider.of<DataModel>(context, listen: false).updateData(context);
+    Provider.of<DataModel>(context, listen: false).fetchData(context);
     super.initState();
   }
 

@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,21 +14,23 @@ class DataModel extends ChangeNotifier {
     Parking(emptySpaces: 0, id: "3", name: "Forville", state: "FERMÉ"),
     Parking(emptySpaces: 0, id: "4", name: "Forville", state: "FERMÉ"),
   ];
-  String _lastUpdated = "";
+  DateTime _lastUpdated = DateTime.fromMillisecondsSinceEpoch(0);
 
   UnmodifiableListView<Parking> get parkingList =>
       UnmodifiableListView(_parkingList);
 
-  String get lastUpdated => _lastUpdated;
+  DateTime get lastUpdated => _lastUpdated;
 
-  Future<void> updateData(BuildContext context) async {
+  // Methods
+
+  Future<void> fetchData(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     try {
       final response = await http.get(Uri.parse(
           'https://opendata.lillemetropole.fr/api/explore/v2.1/catalog/datasets/disponibilite-parkings/records?limit=-1'));
 
       if (response.statusCode == 200) {
-        print("DONE !");
+        print("FETCHED !");
 
         List<String> savedFavorites = prefs.containsKey("favorites")
             ? prefs.getStringList("favorites")!
@@ -43,10 +46,15 @@ class DataModel extends ChangeNotifier {
         _parkingList.addAll(newList);
         _parkingList.sort((a, b) => a.name.compareTo(b.name));
       } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Erreur de la requête distante.")));
         throw Exception("Failed to load parking data.");
       }
 
-      _lastUpdated = response.headers['date'] ?? "Erreur de date";
+      String? responseDate = response.headers['date'];
+      if (responseDate != null) {
+        _lastUpdated = HttpDate.parse(responseDate);
+      }
       // response.headers.forEach((key, value) => print("[$key] $value"));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

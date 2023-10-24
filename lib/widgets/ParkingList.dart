@@ -37,7 +37,7 @@ class _ParkingListState extends State<ParkingList> {
               print("No favorites.");
             }
             print("########");
-            return data.updateData(context);
+            return data.fetchData(context);
             // return Future<void>.delayed(const Duration(milliseconds: 500));
           },
           child: ListView.builder(

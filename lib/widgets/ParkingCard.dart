@@ -19,8 +19,11 @@ class _ParkingCardState extends State<ParkingCard> {
 
     return Card(
       child: ListTile(
-        title: Text(parking.name.replaceFirst("Parking", "").trim() +
-            " (${parking.id})"),
+        title: Text(parking.name
+                .replaceFirst("Parking", "")
+                .trim() /* +
+            " (${parking.id})"*/
+            ),
         leading: const Icon(Icons.local_parking),
         trailing: InkWell(
           child: parking.favorite ? favoriteIcon : notFavoriteIcon,
