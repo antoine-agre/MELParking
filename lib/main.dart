@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:parking/models/Parking.dart';
 import 'package:parking/models/DataModel.dart';
 import 'package:parking/widgets/ParkingList.dart';
@@ -16,6 +17,8 @@ import 'package:provider/provider.dart';
 // }
 
 void main() {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(ChangeNotifierProvider(
     create: (context) => DataModel(),
     child: const MainApp(),
@@ -32,7 +35,9 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   @override
   void initState() {
-    Provider.of<DataModel>(context, listen: false).fetchData(context);
+    Provider.of<DataModel>(context, listen: false)
+        .fetchData(context)
+        .then((_) => FlutterNativeSplash.remove());
     super.initState();
   }
 
