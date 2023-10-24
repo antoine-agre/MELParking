@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:parking/models/Parking.dart';
-import 'package:parking/models/ParkingListModel.dart';
+import 'package:parking/models/DataModel.dart';
 import 'package:parking/widgets/ParkingCard.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,10 +19,7 @@ class ParkingList extends StatefulWidget {
 class _ParkingListState extends State<ParkingList> {
   @override
   Widget build(BuildContext context) {
-    Icon favoriteIcon = const Icon(Icons.favorite);
-    Icon notFavoriteIcon = const Icon(Icons.favorite_border);
-
-    return Consumer<ParkingListModel>(
+    return Consumer<DataModel>(
       builder: (context, data, child) {
         List<Parking> parkingList = data.parkingList;
         if (widget.onlyFavorites) {

@@ -6,12 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:parking/models/Parking.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ParkingListModel extends ChangeNotifier {
+class DataModel extends ChangeNotifier {
   final List<Parking> _parkingList = [
     Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
-    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
-    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
-    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
+    Parking(emptySpaces: 0, id: "2", name: "Forville", state: "FERMÉ"),
+    Parking(emptySpaces: 0, id: "3", name: "Forville", state: "FERMÉ"),
+    Parking(emptySpaces: 0, id: "4", name: "Forville", state: "FERMÉ"),
   ];
   String _lastUpdated = "";
 

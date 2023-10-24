@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parking/models/Parking.dart';
-import 'package:parking/models/ParkingListModel.dart';
+import 'package:parking/models/DataModel.dart';
 import 'package:parking/widgets/ParkingList.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(
-    create: (context) => ParkingListModel(),
+    create: (context) => DataModel(),
     child: const MainApp(),
   ));
 }
@@ -30,7 +30,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   @override
   void initState() {
-    Provider.of<ParkingListModel>(context, listen: false).updateData(context);
+    Provider.of<DataModel>(context, listen: false).updateData(context);
     super.initState();
   }
 
