@@ -5,6 +5,7 @@ import 'package:parking/models/Parking.dart';
 import 'package:parking/models/ParkingListModel.dart';
 import 'package:parking/widgets/ParkingCard.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ParkingList extends StatefulWidget {
   final bool onlyFavorites;
@@ -31,6 +32,14 @@ class _ParkingListState extends State<ParkingList> {
         }
         return RefreshIndicator(
           onRefresh: () async {
+            final prefs = await SharedPreferences.getInstance();
+            print("########");
+            if (prefs.containsKey("favorites")) {
+              print(prefs.getStringList("favorites"));
+            } else {
+              print("No favorites.");
+            }
+            print("########");
             return data.updateData(context);
             // return Future<void>.delayed(const Duration(milliseconds: 500));
           },

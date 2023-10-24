@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Parking {
   final String id;
   final String name;
@@ -18,5 +20,27 @@ class Parking {
       state: json['etat'],
       emptySpaces: json['dispo'],
     );
+  }
+
+  Future<void> toggleFavorite() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.containsKey("favorites")) {
+      List<String> favoritesList = prefs.getStringList("favorites")!;
+      if (favorite) {
+        favoritesList.remove(id);
+      } else {
+        if (!favoritesList.contains(id)) {
+          favoritesList.add(id);
+        }
+      }
+      prefs.setStringList("favorites", favoritesList);
+    } else {
+      if (!favorite) {
+        prefs.setStringList("favorites", [id]);
+      }
+    }
+
+    favorite = !favorite;
   }
 }

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:parking/models/Parking.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ParkingListModel extends ChangeNotifier {
   final List<Parking> _parkingList = [
@@ -20,13 +21,24 @@ class ParkingListModel extends ChangeNotifier {
   String get lastUpdated => _lastUpdated;
 
   Future<void> updateData(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
     try {
       final response = await http.get(Uri.parse(
           'https://opendata.lillemetropole.fr/api/explore/v2.1/catalog/datasets/disponibilite-parkings/records?limit=-1'));
 
       if (response.statusCode == 200) {
         print("DONE !");
+
+        List<String> savedFavorites = prefs.containsKey("favorites")
+            ? prefs.getStringList("favorites")!
+            : [];
+
         List<Parking> newList = _parseJSON(response);
+
+        newList.forEach((parking) {
+          if (savedFavorites.contains(parking.id)) parking.favorite = true;
+        });
+
         _parkingList.clear();
         _parkingList.addAll(newList);
         _parkingList.sort((a, b) => a.name.compareTo(b.name));
@@ -49,7 +61,7 @@ class ParkingListModel extends ChangeNotifier {
     List<dynamic> parkingList = jsonDecode(response.body)['results'];
     for (var parkingData in parkingList) {
       Parking parking = Parking.fromJson(parkingData);
-      parking.favorite = _isFavorite(parking.id);
+      // parking.favorite = _isFavorite(parking.id);
       output.add(parking);
     }
     return output;
