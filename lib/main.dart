@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:parking/models/Parking.dart';
 import 'package:parking/models/DataModel.dart';
+import 'package:parking/widgets/LocationScreen.dart';
 import 'package:parking/widgets/ParkingList.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +35,8 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  Position? userPosition;
+
   @override
   void initState() {
     Provider.of<DataModel>(context, listen: false)
@@ -47,7 +51,7 @@ class _MainAppState extends State<MainApp> {
 
     return MaterialApp(
       home: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             title: const Text("Parkings de la MEL"),
@@ -56,7 +60,8 @@ class _MainAppState extends State<MainApp> {
               tabs: [
                 Tab(text: "Parkings", icon: Icon(Icons.local_parking)),
                 Tab(text: "Favoris", icon: Icon(Icons.favorite)),
-                Tab(text: "Destinations", icon: Icon(Icons.place)),
+                Tab(text: "Lieux", icon: Icon(Icons.apartment_rounded)),
+                Tab(text: "GPS", icon: Icon(Icons.satellite_alt_rounded)),
               ],
             ),
           ),
@@ -67,6 +72,7 @@ class _MainAppState extends State<MainApp> {
                 onlyFavorites: true,
               ),
               Center(child: Text("Tab 3")),
+              LocationScreen(),
             ],
           ),
         ),

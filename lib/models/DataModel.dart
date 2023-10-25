@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:parking/models/Parking.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class DataModel extends ChangeNotifier {
   final List<Parking> _parkingList = [
@@ -15,11 +18,14 @@ class DataModel extends ChangeNotifier {
     Parking(emptySpaces: 0, id: "4", name: "Forville", state: "FERMÉ"),
   ];
   DateTime _lastUpdated = DateTime.fromMillisecondsSinceEpoch(0);
+  Position? _userPosition = null;
 
   UnmodifiableListView<Parking> get parkingList =>
       UnmodifiableListView(_parkingList);
 
   DateTime get lastUpdated => _lastUpdated;
+
+  Position? get userPosition => _userPosition;
 
   // Methods
 
@@ -62,6 +68,53 @@ class DataModel extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<void> getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      Geolocator.openLocationSettings();
+      return Future.error("Location services are disabled.");
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error("Location permissions are denied.");
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error("Location permissions are permanently denied.");
+    }
+
+    _userPosition = await Geolocator.getCurrentPosition();
+    notifyListeners();
+    liveLocation();
+    // return await Geolocator.getCurrentPosition();
+  }
+
+  void liveLocation() {
+    LocationSettings locationSettings = const LocationSettings(
+        accuracy: LocationAccuracy.high, distanceFilter: 10);
+
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position position) {
+      _userPosition = position;
+      notifyListeners();
+    });
+  }
+
+  Future<void> openMap() async {
+    if (userPosition != null) {
+      Uri googleURL = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=${userPosition!.latitude}%2C${userPosition!.longitude}');
+
+      await canLaunchUrl(googleURL)
+          ? await launchUrl(googleURL)
+          : throw "Couldn't launch $googleURL";
+    }
   }
 
   List<Parking> _parseJSON(http.Response response) {

@@ -36,6 +36,9 @@ class _ParkingListState extends State<ParkingList> {
             } else {
               print("No favorites.");
             }
+            print(data.parkingList
+                .singleWhere((p) => p.id == "VAQ0002")
+                .emptySpaces);
             print("########");
             return data.fetchData(context);
             // return Future<void>.delayed(const Duration(milliseconds: 500));
