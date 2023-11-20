@@ -47,8 +47,7 @@ class _ParkingCardState extends State<ParkingCard> {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        // parking.name,
-                        parking.colorCode.toString(),
+                        parking.name,
                         textScaleFactor: 2,
                         style: TextStyle(
                           // fontWeight: FontWeight.bold,

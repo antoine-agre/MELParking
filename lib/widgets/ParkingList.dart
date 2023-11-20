@@ -20,18 +20,49 @@ class ParkingList extends StatefulWidget {
 
 class _ParkingListState extends State<ParkingList> {
   SortingMode sortingMode = SortingMode.recommended;
+  List<Parking> sortedList = [];
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DataModel>(
       builder: (context, data, child) {
-        List<Parking> parkingList = data.parkingList;
-        if (widget.onlyFavorites) {
-          parkingList = List<Parking>.from(parkingList);
-          parkingList.retainWhere((parking) => parking.favorite);
-          parkingList = UnmodifiableListView(parkingList);
+        // List<Parking> parkingList = data.parkingList;
+        sortedList = List<Parking>.from(data.parkingList);
+
+        if (data.userPosition != null) {
+          if (sortingMode == SortingMode.favorites) {
+            sortedList.retainWhere((parking) => parking.favorite);
+          }
+
+          if (sortingMode != SortingMode.all) {
+            // Add distance to crowded parkings
+            sortedList.forEach((Parking parking) {
+              if (parking.colorCode == ColorCode.black) {
+                parking.distance = double.infinity;
+              } else if (parking.colorCode == ColorCode.red) {
+                parking.distance = parking.distance * 2;
+              }
+            });
+
+            // Sort by distance
+            sortedList.sort((a, b) {
+              double delta = a.distance - b.distance;
+              if (delta < 0) {
+                return -1;
+              } else if (delta > 0) {
+                return 1;
+              } else {
+                return 0;
+              }
+            });
+          }
         }
-        //sort here
+
+        // if (widget.onlyFavorites) {
+        //   parkingList = List<Parking>.from(parkingList);
+        //   parkingList.retainWhere((parking) => parking.favorite);
+        //   parkingList = UnmodifiableListView(parkingList);
+        // }
         return RefreshIndicator(
           onRefresh: () async {
             final prefs = await SharedPreferences.getInstance();
@@ -56,11 +87,11 @@ class _ParkingListState extends State<ParkingList> {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: parkingList.length,
+                  itemCount: sortedList.length,
                   itemBuilder: (BuildContext context, int i) {
                     return ParkingCard(
-                        parking: parkingList[i],
-                        key: ValueKey(parkingList[i].id));
+                        parking: sortedList[i],
+                        key: ValueKey(sortedList[i].id));
                     // return ListTile(
                     //   title: Text(
                     //       parkingList[i].name.replaceFirst("Parking", "").trim()),

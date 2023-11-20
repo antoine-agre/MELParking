@@ -28,7 +28,7 @@ class Parking {
 
   //Custom
   bool favorite = false;
-  double? distance = null;
+  double distance = double.infinity;
   ColorCode colorCode = ColorCode.black;
 
   Parking({
