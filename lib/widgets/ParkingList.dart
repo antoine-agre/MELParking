@@ -7,6 +7,8 @@ import 'package:parking/widgets/ParkingCard.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum SortingMode { recommended, favorites, all }
+
 class ParkingList extends StatefulWidget {
   final bool onlyFavorites;
 
@@ -17,6 +19,8 @@ class ParkingList extends StatefulWidget {
 }
 
 class _ParkingListState extends State<ParkingList> {
+  SortingMode sortingMode = SortingMode.recommended;
+
   @override
   Widget build(BuildContext context) {
     return Consumer<DataModel>(
@@ -46,8 +50,9 @@ class _ParkingListState extends State<ParkingList> {
           },
           child: Column(
             children: [
-              Placeholder(
-                child: Text("SortControl"),
+              Text(
+                sortingMode.toString(),
+                textScaleFactor: 2,
               ),
               Expanded(
                 child: ListView.builder(
@@ -71,6 +76,42 @@ class _ParkingListState extends State<ParkingList> {
                     //   ),
                     // );
                   },
+                ),
+              ),
+              SegmentedButton(
+                segments: [
+                  ButtonSegment(
+                    value: SortingMode.recommended,
+                    label: Text("Proches"),
+                    icon: Icon(Icons.recommend_rounded),
+                  ),
+                  ButtonSegment(
+                    value: SortingMode.favorites,
+                    label: Text("Favoris"),
+                    icon: Icon(Icons.favorite_rounded),
+                  ),
+                  ButtonSegment(
+                    value: SortingMode.all,
+                    label: Text("Tous"),
+                    icon: Icon(Icons.all_inclusive_rounded),
+                  ),
+                ],
+                selected: <SortingMode>{sortingMode},
+                onSelectionChanged: (Set<SortingMode> newSelection) {
+                  setState(() {
+                    sortingMode = newSelection.first;
+                  });
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.selected)) {
+                        return Colors.redAccent.shade400;
+                      } else {
+                        return Colors.grey.shade300;
+                      }
+                    },
+                  ),
                 ),
               ),
             ],
