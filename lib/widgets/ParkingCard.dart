@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:parking/models/DataModel.dart';
 import 'package:parking/models/Parking.dart';
+import 'package:provider/provider.dart';
 
 class ParkingCard extends StatefulWidget {
   final Parking parking;
@@ -33,143 +35,151 @@ class _ParkingCardState extends State<ParkingCard> {
           width: 4,
         ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Left side (text)
-            Expanded(
-              child: Column(
-                children: [
-                  // Parking name
-                  Container(
-                    child: FittedBox(
+      child: InkWell(
+        onTap: () {
+          Provider.of<DataModel>(context, listen: false).openMap(parking);
+        },
+        splashColor: Colors.grey[600],
+        highlightColor: Colors.grey[400],
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Left side (text)
+              Expanded(
+                child: Column(
+                  children: [
+                    // Parking name
+                    Container(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          parking.name,
+                          textScaleFactor: 2,
+                          style: TextStyle(
+                            // fontWeight: FontWeight.bold,
+                            fontFamily: "Caracteres",
+                            // fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Parking Address
+                    FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        parking.name,
-                        textScaleFactor: 2,
+                        parking.address,
+                        // parking.distance.toString(),
+                        textScaleFactor: 1.5,
                         style: TextStyle(
-                          // fontWeight: FontWeight.bold,
                           fontFamily: "Caracteres",
-                          // fontStyle: FontStyle.italic,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     ),
-                  ),
-                  // Parking Address
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      // parking.address,
-                      parking.distance.toString(),
-                      textScaleFactor: 1.5,
-                      style: TextStyle(
-                        fontFamily: "Caracteres",
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ),
-                  // Numbers line
-                  SizedBox(
-                    height: 40,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Display container
-                        Container(
-                          width: 160,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.black,
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              parking.display == "LIBRE"
-                                  ? parking.emptySpaces.toString()
-                                  : parking.display,
-                              textScaleFactor: 5,
-                              style: TextStyle(
-                                fontFamily: "Dot-Matrix",
-                                fontWeight: FontWeight.bold,
-                                color: Colors.amber,
-                              ),
+                    // Numbers line
+                    SizedBox(
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Display container
+                          Container(
+                            width: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.black,
                             ),
-                          ),
-                        ),
-                        const VerticalDivider(
-                          width: 20,
-                          thickness: 1,
-                          indent: 5,
-                          endIndent: 5,
-                          color: Colors.grey,
-                        ),
-                        // Capacity text
-                        Column(
-                          children: [
-                            const Text(
-                              "Capacité",
-                              textScaleFactor: 0.95,
-                              style: TextStyle(
-                                fontFamily: "Caracteres",
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                            FittedBox(
+                            child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
-                                parking.capacity.toString(),
-                                textScaleFactor: 1.5,
-                                style: TextStyle(fontFamily: "Caracteres"),
+                                parking.display == "LIBRE"
+                                    ? parking.emptySpaces.toString()
+                                    : parking.display,
+                                textScaleFactor: 5,
+                                style: TextStyle(
+                                  fontFamily: "Dot-Matrix",
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.amber,
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const VerticalDivider(
+                            width: 20,
+                            thickness: 1,
+                            indent: 5,
+                            endIndent: 5,
+                            color: Colors.grey,
+                          ),
+                          // Capacity text
+                          Column(
+                            children: [
+                              const Text(
+                                "Capacité",
+                                textScaleFactor: 0.95,
+                                style: TextStyle(
+                                  fontFamily: "Caracteres",
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  parking.capacity.toString(),
+                                  textScaleFactor: 1.5,
+                                  style: TextStyle(fontFamily: "Caracteres"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Right side (icons)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: parking.colorCode.color,
+                    ),
+                    child: Icon(Icons.local_parking_rounded,
+                        color: Colors.white, size: 50),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        parking.toggleFavorite();
+                      });
+                    },
+                    child: parking.favorite ? favoriteIcon : notFavoriteIcon,
+                    style: ElevatedButton.styleFrom(
+                      shape: CircleBorder(),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.red,
+                      padding: EdgeInsets.zero,
                     ),
                   ),
+                  // InkWell(
+                  //   child: parking.favorite ? favoriteIcon : notFavoriteIcon,
+                  //   onTap: () {
+                  //     setState(() {
+                  //       // parking.favorite = !parking.favorite;
+                  //       parking.toggleFavorite();
+                  //     });
+                  //   },
+                  // ),
                 ],
               ),
-            ),
-            // Right side (icons)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: parking.colorCode.color,
-                  ),
-                  child: Icon(Icons.local_parking_rounded,
-                      color: Colors.white, size: 50),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      parking.toggleFavorite();
-                    });
-                  },
-                  child: parking.favorite ? favoriteIcon : notFavoriteIcon,
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.red,
-                    padding: EdgeInsets.zero,
-                  ),
-                ),
-                // InkWell(
-                //   child: parking.favorite ? favoriteIcon : notFavoriteIcon,
-                //   onTap: () {
-                //     setState(() {
-                //       // parking.favorite = !parking.favorite;
-                //       parking.toggleFavorite();
-                //     });
-                //   },
-                // ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

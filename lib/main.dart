@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:parking/models/Parking.dart';
@@ -39,9 +41,13 @@ class _MainAppState extends State<MainApp> {
 
   @override
   void initState() {
-    Provider.of<DataModel>(context, listen: false)
-        .fetchData(context)
-        .then((_) => FlutterNativeSplash.remove());
+    DataModel model = Provider.of<DataModel>(context, listen: false);
+    model.fetchData(context).then((_) => FlutterNativeSplash.remove());
+
+    Timer.periodic(Duration(minutes: 1), (timer) {
+      model.fetchData(context);
+    });
+
     super.initState();
   }
 
@@ -59,7 +65,7 @@ class _MainAppState extends State<MainApp> {
             bottom: const TabBar(
               tabs: [
                 Tab(text: "Parkings", icon: Icon(Icons.local_parking)),
-                Tab(text: "Favoris", icon: Icon(Icons.favorite)),
+                Tab(text: "Carte", icon: Icon(Icons.map_rounded)),
                 Tab(text: "Lieux", icon: Icon(Icons.apartment_rounded)),
                 Tab(text: "GPS", icon: Icon(Icons.satellite_alt_rounded)),
               ],
@@ -68,10 +74,12 @@ class _MainAppState extends State<MainApp> {
           body: TabBarView(
             children: [
               ParkingList(),
-              ParkingList(
-                onlyFavorites: true,
+              Placeholder(
+                child: Text("Carte"),
               ),
-              Center(child: Text("Tab 3")),
+              Placeholder(
+                child: Text("Lieux"),
+              ),
               LocationScreen(),
             ],
           ),

@@ -10,9 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum SortingMode { recommended, favorites, all }
 
 class ParkingList extends StatefulWidget {
-  final bool onlyFavorites;
-
-  const ParkingList({super.key, this.onlyFavorites = false});
+  const ParkingList({super.key});
 
   @override
   State<ParkingList> createState() => _ParkingListState();
@@ -29,11 +27,11 @@ class _ParkingListState extends State<ParkingList> {
         // List<Parking> parkingList = data.parkingList;
         sortedList = List<Parking>.from(data.parkingList);
 
-        if (data.userPosition != null) {
-          if (sortingMode == SortingMode.favorites) {
-            sortedList.retainWhere((parking) => parking.favorite);
-          }
+        if (sortingMode == SortingMode.favorites) {
+          sortedList.retainWhere((parking) => parking.favorite);
+        }
 
+        if (data.userPosition != null) {
           if (sortingMode != SortingMode.all) {
             // Add distance to crowded parkings
             sortedList.forEach((Parking parking) {
@@ -81,10 +79,6 @@ class _ParkingListState extends State<ParkingList> {
           },
           child: Column(
             children: [
-              Text(
-                sortingMode.toString(),
-                textScaleFactor: 2,
-              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: sortedList.length,

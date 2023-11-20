@@ -122,10 +122,16 @@ class DataModel extends ChangeNotifier {
     });
   }
 
-  Future<void> openMap() async {
+  Future<void> openMap([Parking? parking]) async {
     if (userPosition != null) {
-      Uri googleURL = Uri.parse(
-          'https://www.google.com/maps/search/?api=1&query=${userPosition!.latitude}%2C${userPosition!.longitude}');
+      Uri googleURL;
+      if (parking == null) {
+        googleURL = Uri.parse(
+            'https://www.google.com/maps/search/?api=1&query=${userPosition!.latitude}%2C${userPosition!.longitude}');
+      } else {
+        googleURL = Uri.parse(
+            'https://www.google.com/maps/dir/?api=1&destination=${parking.latitude}%2C${parking.longitude}');
+      }
 
       await canLaunchUrl(googleURL)
           ? await launchUrl(googleURL)
