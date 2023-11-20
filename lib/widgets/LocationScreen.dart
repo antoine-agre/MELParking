@@ -18,6 +18,8 @@ class _LocationScreenState extends State<LocationScreen> {
     return Consumer<DataModel>(
       builder: (context, data, child) {
         Position? pos = data.userPosition;
+        void Function() mapFunction = () => data.openMap();
+
         return LayoutBuilder(
           builder: (context, constraint) {
             return Column(
@@ -31,15 +33,28 @@ class _LocationScreenState extends State<LocationScreen> {
                       fontSize: 20,
                       color: pos != null ? Colors.green[800] : Colors.red[800]),
                 ),
-                // Text(pos == null
-                //     ? "Tab 4"
-                //     : "Lat : ${pos.latitude}\nLong : ${pos.longitude}"),
-                InkWell(
-                    onTap: () {
-                      data.getCurrentLocation();
-                    },
-                    customBorder: CircleBorder(),
-                    child: statusIcon(pos != null, constraint)),
+                Text(pos == null
+                    ? "Tab 4"
+                    : "Lat : ${pos.latitude}\nLong : ${pos.longitude}"),
+                // InkWell(
+                //     onTap: () {
+                //       data.getCurrentLocation();
+                //     },
+                //     customBorder: CircleBorder(),
+                //     child: statusIcon(pos != null, constraint)),
+
+                ElevatedButton(
+                  onPressed: () {
+                    data.getCurrentLocation();
+                  },
+                  child: statusIcon(pos != null, constraint),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.grey,
+                  ),
+                ),
+
                 // ElevatedButton(
                 //   onPressed: () {
                 //     data.getCurrentLocation();
@@ -48,9 +63,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 //   child: Text("Get current location"),
                 // ),
                 ElevatedButton(
-                  onPressed: () {
-                    data.openMap();
-                  },
+                  onPressed: pos == null ? null : mapFunction,
                   child: const Text("Open in Google Maps"),
                 ),
               ],

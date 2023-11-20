@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,12 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class DataModel extends ChangeNotifier {
-  final List<Parking> _parkingList = [
-    Parking(emptySpaces: 0, id: "1", name: "Forville", state: "FERMÉ"),
-    Parking(emptySpaces: 0, id: "2", name: "Forville", state: "FERMÉ"),
-    Parking(emptySpaces: 0, id: "3", name: "Forville", state: "FERMÉ"),
-    Parking(emptySpaces: 0, id: "4", name: "Forville", state: "FERMÉ"),
-  ];
+  final List<Parking> _parkingList = [];
   DateTime _lastUpdated = DateTime.fromMillisecondsSinceEpoch(0);
   Position? _userPosition = null;
 
@@ -46,11 +42,25 @@ class DataModel extends ChangeNotifier {
 
         newList.forEach((parking) {
           if (savedFavorites.contains(parking.id)) parking.favorite = true;
+
+          // Color code
+          if ((parking.state != "OUVERT" && parking.state != "LIBRE") ||
+              parking.emptySpaces <= 0) {
+            parking.colorCode = ColorCode.black;
+          } else if (parking.emptySpaces < 0.05 * parking.capacity ||
+              parking.emptySpaces < 20) {
+            parking.colorCode = ColorCode.red;
+          } else if (parking.emptySpaces < 0.20 * parking.capacity) {
+            parking.colorCode = ColorCode.orange;
+          } else {
+            parking.colorCode = ColorCode.green;
+          }
         });
 
         _parkingList.clear();
         _parkingList.addAll(newList);
         _parkingList.sort((a, b) => a.name.compareTo(b.name));
+        _updateDistances();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Erreur de la requête distante.")));
@@ -63,7 +73,7 @@ class DataModel extends ChangeNotifier {
       }
       // response.headers.forEach((key, value) => print("[$key] $value"));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           const SnackBar(content: Text("Échec de récupération des données.")));
     }
 
@@ -71,11 +81,11 @@ class DataModel extends ChangeNotifier {
   }
 
   Future<void> getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      Geolocator.openLocationSettings();
-      return Future.error("Location services are disabled.");
-    }
+    // bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    // if (!serviceEnabled) {
+    //   // Geolocator.openLocationSettings();
+    //   return Future.error("Location services are disabled.");
+    // }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -90,6 +100,9 @@ class DataModel extends ChangeNotifier {
     }
 
     _userPosition = await Geolocator.getCurrentPosition();
+
+    _updateDistances();
+
     notifyListeners();
     liveLocation();
     // return await Geolocator.getCurrentPosition();
@@ -97,11 +110,14 @@ class DataModel extends ChangeNotifier {
 
   void liveLocation() {
     LocationSettings locationSettings = const LocationSettings(
-        accuracy: LocationAccuracy.high, distanceFilter: 10);
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
 
     Geolocator.getPositionStream(locationSettings: locationSettings)
         .listen((Position position) {
       _userPosition = position;
+      _updateDistances();
       notifyListeners();
     });
   }
@@ -136,4 +152,21 @@ class DataModel extends ChangeNotifier {
       return false;
     }
   }
+
+  void _updateDistances() {
+    // for every parking, update distance field using euclidian distance
+    // between parking position and user position
+    if (userPosition != null) {
+      for (Parking parking in _parkingList) {
+        double deltaLat = userPosition!.latitude - parking.latitude;
+        double deltaLong = userPosition!.longitude - parking.longitude;
+        parking.distance = sqrt(pow(deltaLat, 2) + pow(deltaLong, 2));
+      }
+    }
+  }
+
+  // List<Parking> _computeDistances(List<Parking> list) {
+  //   // Computes distance for a list of Parking objects, and returns it.
+  //   return [];
+  // }
 }

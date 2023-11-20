@@ -23,6 +23,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Caracteres
+      fonts:
+        - asset: fonts/Caracteres-L1.ttf
+        - asset: fonts/Caracteres-L4.ttf
+          style: italic
+    - family: Dot-Matrix
+      fonts:
+        - asset: fonts/LED-Dot-Matrix.ttf
 
 flutter_native_splash:
   color: "#ffffff"

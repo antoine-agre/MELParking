@@ -1,24 +1,61 @@
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum ColorCode {
+  green(color: Colors.green),
+  orange(color: Colors.orange),
+  red(color: Colors.red),
+  black(color: Colors.black);
+
+  const ColorCode({required this.color});
+
+  final Color color;
+}
+
 class Parking {
+  //From JSON
   final String id;
   final String name;
+  final String ville;
+  final String address;
+  final String display;
   final String state;
   final int emptySpaces;
-  bool favorite = false;
+  final int capacity;
+  final double latitude;
+  final double longitude;
 
-  Parking(
-      {required this.id,
-      required this.name,
-      required this.state,
-      required this.emptySpaces});
+  //Custom
+  bool favorite = false;
+  double? distance = null;
+  ColorCode colorCode = ColorCode.black;
+
+  Parking({
+    required this.id,
+    required this.name,
+    required this.ville,
+    required this.address,
+    required this.display,
+    required this.state,
+    required this.emptySpaces,
+    required this.capacity,
+    required this.latitude,
+    required this.longitude,
+  });
 
   factory Parking.fromJson(Map<String, dynamic> json) {
     return Parking(
       id: json['id'],
-      name: json['libelle'],
+      name: json['libelle'].replaceFirst("Parking", "").trim(),
       state: json['etat'],
       emptySpaces: json['dispo'],
+      latitude: json['geometry']['geometry']['coordinates'][1],
+      longitude: json['geometry']['geometry']['coordinates'][0],
+      ville: json['ville'],
+      address: json['adresse'],
+      display: json['aff'],
+      capacity: json['max'],
     );
   }
 

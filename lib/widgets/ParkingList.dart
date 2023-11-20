@@ -27,6 +27,7 @@ class _ParkingListState extends State<ParkingList> {
           parkingList.retainWhere((parking) => parking.favorite);
           parkingList = UnmodifiableListView(parkingList);
         }
+        //sort here
         return RefreshIndicator(
           onRefresh: () async {
             final prefs = await SharedPreferences.getInstance();
@@ -43,26 +44,36 @@ class _ParkingListState extends State<ParkingList> {
             return data.fetchData(context);
             // return Future<void>.delayed(const Duration(milliseconds: 500));
           },
-          child: ListView.builder(
-            itemCount: parkingList.length,
-            itemBuilder: (BuildContext context, int i) {
-              return ParkingCard(
-                  parking: parkingList[i], key: ValueKey(parkingList[i].id));
-              // return ListTile(
-              //   title: Text(
-              //       parkingList[i].name.replaceFirst("Parking", "").trim()),
-              //   leading: const Icon(Icons.local_parking),
-              //   trailing: InkWell(
-              //     child:
-              //         parkingList[i].favorite ? favoriteIcon : notFavoriteIcon,
-              //     onTap: () {
-              //       setState(() {
-              //         parkingList[i].favorite = !parkingList[i].favorite;
-              //       });
-              //     },
-              //   ),
-              // );
-            },
+          child: Column(
+            children: [
+              Placeholder(
+                child: Text("SortControl"),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: parkingList.length,
+                  itemBuilder: (BuildContext context, int i) {
+                    return ParkingCard(
+                        parking: parkingList[i],
+                        key: ValueKey(parkingList[i].id));
+                    // return ListTile(
+                    //   title: Text(
+                    //       parkingList[i].name.replaceFirst("Parking", "").trim()),
+                    //   leading: const Icon(Icons.local_parking),
+                    //   trailing: InkWell(
+                    //     child:
+                    //         parkingList[i].favorite ? favoriteIcon : notFavoriteIcon,
+                    //     onTap: () {
+                    //       setState(() {
+                    //         parkingList[i].favorite = !parkingList[i].favorite;
+                    //       });
+                    //     },
+                    //   ),
+                    // );
+                  },
+                ),
+              ),
+            ],
           ),
         );
       },
