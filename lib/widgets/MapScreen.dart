@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parking/models/DataModel.dart';
+import 'package:parking/models/Parking.dart';
 import 'package:provider/provider.dart';
 
 class MapScreen extends StatelessWidget {
@@ -20,6 +21,17 @@ class MapScreen extends StatelessWidget {
             ? LatLng(50.636565, 3.063528)
             : LatLng(userPosition.latitude, userPosition.longitude);
         MapController mapController = MapController();
+        Marker? userMarker = userPosition == null
+            ? null
+            : Marker(
+                height: 50,
+                width: 50,
+                point: LatLng(userPosition.latitude, userPosition.longitude),
+                child: Icon(
+                  Icons.directions_car_rounded,
+                  size: 50,
+                ),
+              );
 
         return Stack(
           children: [
@@ -32,10 +44,24 @@ class MapScreen extends StatelessWidget {
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: "io.github.antoine-agre.MELParking"),
                 MarkerLayer(
+                  alignment: Alignment.center,
                   markers: [
-                    Marker(
-                        point: LatLng(50.6154783, 3.0314817),
-                        child: FlutterLogo()),
+                    // User
+                    if (userMarker != null) userMarker,
+                    for (Parking parking in data.parkingList)
+                      Marker(
+                        height: 30,
+                        width: 30,
+                        point: LatLng(parking.latitude, parking.longitude),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: parking.colorCode.color,
+                          ),
+                          child: Icon(Icons.local_parking_rounded,
+                              color: Colors.white, size: 30),
+                        ),
+                      )
                   ],
                 ),
               ],
@@ -50,7 +76,7 @@ class MapScreen extends StatelessWidget {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () {
-                    mapController.moveAndRotate(center, 13, 0);
+                    mapController.moveAndRotate(center, 15, 0);
                   },
                   child: Center(child: Icon(Icons.my_location_rounded)),
                 ),
