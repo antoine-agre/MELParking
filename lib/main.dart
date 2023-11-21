@@ -1,13 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:parking/models/Parking.dart';
 import 'package:parking/models/DataModel.dart';
 import 'package:parking/widgets/LocationScreen.dart';
+import 'package:parking/widgets/MapScreen.dart';
 import 'package:parking/widgets/ParkingList.dart';
 import 'package:provider/provider.dart';
 
@@ -74,9 +73,7 @@ class _MainAppState extends State<MainApp> {
           body: TabBarView(
             children: [
               ParkingList(),
-              Placeholder(
-                child: Text("Carte"),
-              ),
+              MapScreen(),
               Placeholder(
                 child: Text("Lieux"),
               ),

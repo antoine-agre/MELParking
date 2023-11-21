@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:parking/models/Parking.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class DataModel extends ChangeNotifier {
   final List<Parking> _parkingList = [];
@@ -123,7 +122,7 @@ class DataModel extends ChangeNotifier {
   }
 
   Future<void> openMap([Parking? parking]) async {
-    if (userPosition != null) {
+    if (userPosition != null || parking != null) {
       Uri googleURL;
       if (parking == null) {
         googleURL = Uri.parse(

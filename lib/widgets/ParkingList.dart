@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:parking/models/Parking.dart';
 import 'package:parking/models/DataModel.dart';
@@ -79,6 +77,15 @@ class _ParkingListState extends State<ParkingList> {
           },
           child: Column(
             children: [
+              data.userPosition == null
+                  ? Text(
+                      "La localisation n'est pas activée.",
+                      textScaleFactor: 1.5,
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    )
+                  : Container(),
               Expanded(
                 child: ListView.builder(
                   itemCount: sortedList.length,
