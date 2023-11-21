@@ -53,13 +53,18 @@ class MapScreen extends StatelessWidget {
                         height: 30,
                         width: 30,
                         point: LatLng(parking.latitude, parking.longitude),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: parking.colorCode.color,
+                        child: InkWell(
+                          onTap: () {
+                            data.openMap(parking);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: parking.colorCode.color,
+                            ),
+                            child: Icon(Icons.local_parking_rounded,
+                                color: Colors.white, size: 30),
                           ),
-                          child: Icon(Icons.local_parking_rounded,
-                              color: Colors.white, size: 30),
                         ),
                       )
                   ],
