@@ -16,23 +16,46 @@ class MapScreen extends StatelessWidget {
       builder: (context, data, child) {
         Position? userPosition = data.userPosition;
         // Default : Lille
-        LatLng initialCenter = userPosition == null
+        LatLng center = userPosition == null
             ? LatLng(50.636565, 3.063528)
             : LatLng(userPosition.latitude, userPosition.longitude);
+        MapController mapController = MapController();
 
-        return FlutterMap(
-          mapController: MapController(),
-          options: MapOptions(keepAlive: true, initialCenter: initialCenter),
+        return Stack(
           children: [
-            TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: "io.github.antoine-agre.MELParking"),
-            MarkerLayer(
-              markers: [
-                Marker(
-                    point: LatLng(50.6154783, 3.0314817), child: FlutterLogo()),
+            FlutterMap(
+              mapController: mapController,
+              options: MapOptions(keepAlive: true, initialCenter: center),
+              children: [
+                TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: "io.github.antoine-agre.MELParking"),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                        point: LatLng(50.6154783, 3.0314817),
+                        child: FlutterLogo()),
+                  ],
+                ),
               ],
             ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                alignment: Alignment.topRight,
+                margin: EdgeInsets.all(8.0),
+                width: 55,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () {
+                    mapController.moveAndRotate(center, 13, 0);
+                  },
+                  child: Center(child: Icon(Icons.my_location_rounded)),
+                ),
+              ),
+            )
           ],
         );
       },
