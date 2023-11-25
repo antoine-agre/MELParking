@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:parking/widgets/ParkingList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Place {
@@ -30,5 +32,27 @@ class Place {
       'longitude': longitude,
       'name': name,
     };
+  }
+
+  void openNearbyPage(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Scaffold(
+        appBar: AppBar(title: Text("Autour de ${name}")),
+        body: ParkingList(
+          customPosition: Position(
+              longitude: longitude,
+              latitude: latitude,
+              timestamp: null,
+              accuracy: 0,
+              altitude: 0,
+              altitudeAccuracy: 0,
+              heading: 0,
+              headingAccuracy: 0,
+              speed: 0,
+              speedAccuracy: 0),
+          placeName: name,
+        ),
+      );
+    }));
   }
 }

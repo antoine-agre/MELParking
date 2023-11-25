@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:parking/models/Parking.dart';
 import 'package:parking/models/DataModel.dart';
 import 'package:parking/widgets/ParkingCard.dart';
@@ -8,7 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum SortingMode { recommended, favorites, all }
 
 class ParkingList extends StatefulWidget {
-  const ParkingList({super.key});
+  final Position? customPosition;
+  final String? placeName;
+
+  const ParkingList({super.key, this.customPosition, this.placeName});
 
   @override
   State<ParkingList> createState() => _ParkingListState();
@@ -24,12 +29,19 @@ class _ParkingListState extends State<ParkingList> {
       builder: (context, data, child) {
         // List<Parking> parkingList = data.parkingList;
         sortedList = List<Parking>.from(data.parkingList);
+        Position? usedPosition = widget.customPosition ?? data.userPosition;
+
+        if (widget.customPosition != null) {
+          sortedList.forEach((Parking parking) {
+            parking.distance = data.calculateDistance(parking, usedPosition!);
+          });
+        }
 
         if (sortingMode == SortingMode.favorites) {
           sortedList.retainWhere((parking) => parking.favorite);
         }
 
-        if (data.userPosition != null) {
+        if (usedPosition != null) {
           if (sortingMode != SortingMode.all) {
             // Add distance to crowded parkings
             sortedList.forEach((Parking parking) {
@@ -77,7 +89,7 @@ class _ParkingListState extends State<ParkingList> {
           },
           child: Column(
             children: [
-              data.userPosition == null
+              widget.customPosition == null && data.userPosition == null
                   ? Text(
                       "La localisation n'est pas activée.",
                       textScaleFactor: 1.5,

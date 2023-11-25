@@ -83,7 +83,9 @@ class _MapScreenState extends State<MapScreen> {
                           width: 40,
                           point: LatLng(place.latitude, place.longitude),
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              place.openNearbyPage(context);
+                            },
                             child: Icon(
                               Icons.apartment_rounded,
                               size: 40,

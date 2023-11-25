@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:parking/models/DataModel.dart';
 import 'package:parking/models/Place.dart';
+import 'package:parking/widgets/ParkingList.dart';
 import 'package:provider/provider.dart';
 
 class PlacesScreen extends StatefulWidget {
@@ -68,28 +70,37 @@ class _PlacesScreenState extends State<PlacesScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text("Entrez un lieu à ajouter"),
-          content: TextField(
-            onSubmitted: (String userInput) {
-              userInput = userInput.trim();
-              print("INPUT : ${userInput}");
-              locationFromAddress(userInput).then(
-                (locationList) {
-                  Location newLocation = locationList.first;
-                  Place newPlace = Place(
-                      latitude: newLocation.latitude,
-                      longitude: newLocation.longitude,
-                      name: userInput);
-                  setState(() {
-                    places.add(newPlace);
-                    data.savePlaces(places);
-                  });
-                  print("LOCATION ADDED : ${places}");
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Les coordonnées du lieu seront recherchées à partir de ce nom.\nVous pourrez par la suite changer le nom du lieu sans modifier ses coordonnées.",
+                textScaleFactor: 0.8,
+              ),
+              TextField(
+                onSubmitted: (String userInput) {
+                  userInput = userInput.trim();
+                  print("INPUT : ${userInput}");
+                  locationFromAddress(userInput).then(
+                    (locationList) {
+                      Location newLocation = locationList.first;
+                      Place newPlace = Place(
+                          latitude: newLocation.latitude,
+                          longitude: newLocation.longitude,
+                          name: userInput);
+                      setState(() {
+                        places.add(newPlace);
+                        data.savePlaces(places);
+                      });
+                      print("LOCATION ADDED : ${places}");
+                    },
+                  );
+                  Navigator.pop(context);
                 },
-              );
-              Navigator.pop(context);
-            },
-            decoration:
-                InputDecoration(hintText: "Entrez un lieu ou une adresse ici"),
+                decoration: InputDecoration(
+                    hintText: "Entrez un lieu ou une adresse ici"),
+              ),
+            ],
           ),
         );
       },
@@ -143,26 +154,31 @@ class _PlacesScreenState extends State<PlacesScreen> {
         places.removeAt(index);
         data.savePlaces(places);
       },
-      child: Card(
-        child: ListTile(
-          title: Text(place.name),
-          leading: InkWell(
-            onTap: () {
-              _displayEditNameDialog(context, place, data);
-            },
-            child: Container(
-              padding: EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                color: Colors.blueAccent,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-              child: Icon(
-                Icons.edit,
-                color: Colors.white,
+      child: InkWell(
+        onTap: () {
+          place.openNearbyPage(context);
+        },
+        child: Card(
+          child: ListTile(
+            title: Text(place.name),
+            leading: InkWell(
+              onTap: () {
+                _displayEditNameDialog(context, place, data);
+              },
+              child: Container(
+                padding: EdgeInsets.all(4.0),
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                ),
               ),
             ),
+            trailing: Icon(Icons.drag_handle_rounded),
           ),
-          trailing: Icon(Icons.drag_handle_rounded),
         ),
       ),
     );

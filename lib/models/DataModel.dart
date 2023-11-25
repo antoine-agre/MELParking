@@ -167,11 +167,18 @@ class DataModel extends ChangeNotifier {
     // between parking position and user position
     if (userPosition != null) {
       for (Parking parking in _parkingList) {
-        double deltaLat = userPosition!.latitude - parking.latitude;
-        double deltaLong = userPosition!.longitude - parking.longitude;
-        parking.distance = sqrt(pow(deltaLat, 2) + pow(deltaLong, 2));
+        // double deltaLat = userPosition!.latitude - parking.latitude;
+        // double deltaLong = userPosition!.longitude - parking.longitude;
+        // parking.distance = sqrt(pow(deltaLat, 2) + pow(deltaLong, 2));
+        parking.distance = calculateDistance(parking, userPosition!);
       }
     }
+  }
+
+  double calculateDistance(Parking parking, Position position) {
+    double deltaLat = position.latitude - parking.latitude;
+    double deltaLong = position.longitude - position.longitude;
+    return sqrt(pow(deltaLat, 2) + pow(deltaLong, 2));
   }
 
   // List<Parking> _computeDistances(List<Parking> list) {
@@ -191,6 +198,7 @@ class DataModel extends ChangeNotifier {
     } else {
       _placeList = [];
     }
+    notifyListeners();
   }
 
   Future<void> savePlaces(List<Place> placeList) async {
@@ -204,5 +212,6 @@ class DataModel extends ChangeNotifier {
     });
 
     prefs.setStringList("places", stringList);
+    notifyListeners();
   }
 }
