@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:parking/models/Parking.dart';
+import 'package:parking/models/Place.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,6 +15,7 @@ class DataModel extends ChangeNotifier {
   final List<Parking> _parkingList = [];
   DateTime _lastUpdated = DateTime.fromMillisecondsSinceEpoch(0);
   Position? _userPosition = null;
+  List<Place> _placeList = [];
 
   UnmodifiableListView<Parking> get parkingList =>
       UnmodifiableListView(_parkingList);
@@ -21,6 +23,8 @@ class DataModel extends ChangeNotifier {
   DateTime get lastUpdated => _lastUpdated;
 
   Position? get userPosition => _userPosition;
+
+  UnmodifiableListView<Place> get placeList => UnmodifiableListView(_placeList);
 
   // Methods
 
@@ -174,4 +178,31 @@ class DataModel extends ChangeNotifier {
   //   // Computes distance for a list of Parking objects, and returns it.
   //   return [];
   // }
+
+  Future<void> loadPlaces() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey("places")) {
+      List<String> stringList = prefs.getStringList("places")!;
+      List<Place> newList = [];
+      stringList.forEach((element) {
+        newList.add(Place.fromJson(jsonDecode(element)));
+      });
+      _placeList = newList;
+    } else {
+      _placeList = [];
+    }
+  }
+
+  Future<void> savePlaces(List<Place> placeList) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    _placeList = placeList;
+
+    List<String> stringList = [];
+    _placeList.forEach((Place place) {
+      stringList.add(jsonEncode(place.toJson()));
+    });
+
+    prefs.setStringList("places", stringList);
+  }
 }

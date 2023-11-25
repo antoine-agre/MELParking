@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:parking/models/DataModel.dart';
 import 'package:parking/models/Place.dart';
+import 'package:provider/provider.dart';
 
 class PlacesScreen extends StatefulWidget {
   const PlacesScreen({
@@ -15,45 +17,52 @@ class PlacesScreen extends StatefulWidget {
 class _PlacesScreenState extends State<PlacesScreen> {
   List<Place> places = [];
 
-  @override
-  void initState() {
-    for (int i = 0; i < 20; i++) {
-      places.add(Place(latitude: 0, longitude: 0, name: i.toString()));
-    }
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   for (int i = 0; i < 20; i++) {
+  //     places.add(Place(latitude: 0, longitude: 0, name: i.toString()));
+  //   }
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ReorderableListView.builder(
-        onReorder: (oldIndex, newIndex) {
-          HapticFeedback.lightImpact();
-          setState(() {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-            final Place item = places.removeAt(oldIndex);
-            places.insert(newIndex, item);
-          });
-        },
-        itemCount: places.length,
-        itemBuilder: (context, index) {
-          return placeCard(places[index], index);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _displayNewPlaceDialog(context, places);
-        },
-        backgroundColor: Colors.red,
-        child: Icon(Icons.add),
-      ),
+    return Consumer<DataModel>(
+      builder: (context, data, child) {
+        places = List.from(data.placeList);
+
+        return Scaffold(
+          body: ReorderableListView.builder(
+            onReorder: (oldIndex, newIndex) {
+              HapticFeedback.lightImpact();
+              setState(() {
+                if (oldIndex < newIndex) {
+                  newIndex -= 1;
+                }
+                final Place item = places.removeAt(oldIndex);
+                places.insert(newIndex, item);
+                data.savePlaces(places);
+              });
+            },
+            itemCount: places.length,
+            itemBuilder: (context, index) {
+              return placeCard(places[index], index, data);
+            },
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _displayNewPlaceDialog(context, places, data);
+            },
+            backgroundColor: Colors.red,
+            child: Icon(Icons.add),
+          ),
+        );
+      },
     );
   }
 
   Future<void> _displayNewPlaceDialog(
-      BuildContext context, List<Place> places) async {
+      BuildContext context, List<Place> places, DataModel data) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -72,6 +81,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
                       name: userInput);
                   setState(() {
                     places.add(newPlace);
+                    data.savePlaces(places);
                   });
                   print("LOCATION ADDED : ${places}");
                 },
@@ -86,7 +96,8 @@ class _PlacesScreenState extends State<PlacesScreen> {
     );
   }
 
-  Future<void> _displayEditNameDialog(BuildContext context, Place place) async {
+  Future<void> _displayEditNameDialog(
+      BuildContext context, Place place, DataModel data) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -101,6 +112,8 @@ class _PlacesScreenState extends State<PlacesScreen> {
                 place.name = userInput;
               });
 
+              data.savePlaces(places);
+
               Navigator.pop(context);
             },
             decoration: InputDecoration(hintText: place.name),
@@ -110,7 +123,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
     );
   }
 
-  Dismissible placeCard(Place place, int index) {
+  Dismissible placeCard(Place place, int index, DataModel data) {
     return Dismissible(
       key: ObjectKey(place),
       direction: DismissDirection.endToStart,
@@ -128,13 +141,14 @@ class _PlacesScreenState extends State<PlacesScreen> {
       ),
       onDismissed: (direction) {
         places.removeAt(index);
+        data.savePlaces(places);
       },
       child: Card(
         child: ListTile(
           title: Text(place.name),
           leading: InkWell(
             onTap: () {
-              _displayEditNameDialog(context, place);
+              _displayEditNameDialog(context, place, data);
             },
             child: Container(
               padding: EdgeInsets.all(4.0),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Place {
-  //From JSON
   final double latitude;
   final double longitude;
   String name;
@@ -13,7 +12,23 @@ class Place {
     required this.name,
   });
 
+  factory Place.fromJson(Map<String, dynamic> json) {
+    return Place(
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      name: json['name'],
+    );
+  }
+
   void setName(String newName) {
     name = newName;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+      'name': name,
+    };
   }
 }

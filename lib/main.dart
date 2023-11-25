@@ -42,6 +42,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     DataModel model = Provider.of<DataModel>(context, listen: false);
+    model.loadPlaces();
     model.fetchData(context).then((_) => FlutterNativeSplash.remove());
 
     Timer.periodic(Duration(minutes: 1), (timer) {
