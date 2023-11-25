@@ -4,12 +4,20 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parking/models/DataModel.dart';
 import 'package:parking/models/Parking.dart';
+import 'package:parking/models/Place.dart';
 import 'package:provider/provider.dart';
 
-class MapScreen extends StatelessWidget {
+class MapScreen extends StatefulWidget {
   const MapScreen({
     super.key,
   });
+
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  bool placesHidden = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +75,21 @@ class MapScreen extends StatelessWidget {
                                 color: Colors.white, size: 30),
                           ),
                         ),
-                      )
+                      ),
+                    if (!placesHidden)
+                      for (Place place in data.placeList)
+                        Marker(
+                          height: 40,
+                          width: 40,
+                          point: LatLng(place.latitude, place.longitude),
+                          child: InkWell(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.apartment_rounded,
+                              size: 40,
+                            ),
+                          ),
+                        ),
                   ],
                 ),
               ],
@@ -87,7 +109,25 @@ class MapScreen extends StatelessWidget {
                   child: Center(child: Icon(Icons.my_location_rounded)),
                 ),
               ),
-            )
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                alignment: Alignment.topRight,
+                margin: EdgeInsets.all(8.0),
+                width: 55,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      placesHidden = !placesHidden;
+                    });
+                  },
+                  child: Center(child: Icon(Icons.apartment_rounded)),
+                ),
+              ),
+            ),
           ],
         );
       },
