@@ -45,6 +45,7 @@ class MapScreen extends StatelessWidget {
                     userAgentPackageName: "io.github.antoine-agre.MELParking"),
                 MarkerLayer(
                   alignment: Alignment.center,
+                  rotate: true,
                   markers: [
                     // User
                     if (userMarker != null) userMarker,

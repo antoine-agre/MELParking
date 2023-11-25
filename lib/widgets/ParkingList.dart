@@ -153,5 +153,3 @@ class _ParkingListState extends State<ParkingList> {
     );
   }
 }
-
-//TODO : function to clean strings

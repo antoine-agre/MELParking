@@ -8,6 +8,7 @@ import 'package:parking/models/DataModel.dart';
 import 'package:parking/widgets/LocationScreen.dart';
 import 'package:parking/widgets/MapScreen.dart';
 import 'package:parking/widgets/ParkingList.dart';
+import 'package:parking/widgets/PlacesScreen.dart';
 import 'package:provider/provider.dart';
 
 // void main() {
@@ -61,6 +62,7 @@ class _MainAppState extends State<MainApp> {
           appBar: AppBar(
             title: const Text("Parkings de la MEL"),
             centerTitle: true,
+            backgroundColor: Colors.red,
             bottom: const TabBar(
               tabs: [
                 Tab(text: "Parkings", icon: Icon(Icons.local_parking)),
@@ -74,9 +76,7 @@ class _MainAppState extends State<MainApp> {
             children: [
               ParkingList(),
               MapScreen(),
-              Placeholder(
-                child: Text("Lieux"),
-              ),
+              PlacesScreen(),
               LocationScreen(),
             ],
           ),
