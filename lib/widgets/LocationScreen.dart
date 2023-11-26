@@ -33,9 +33,9 @@ class _LocationScreenState extends State<LocationScreen> {
                       fontSize: 20,
                       color: pos != null ? Colors.green[800] : Colors.red[800]),
                 ),
-                Text(pos == null
-                    ? "Tab 4"
-                    : "Lat : ${pos.latitude}\nLong : ${pos.longitude}"),
+                // Text(pos == null
+                //     ? "Tab 4"
+                //     : "Lat : ${pos.latitude}\nLong : ${pos.longitude}"),
                 // InkWell(
                 //     onTap: () {
                 //       data.getCurrentLocation();
